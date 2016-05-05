@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width">
+
+        <title>rryqszq4 : ngx_php</title>
+        <meta name="description" content="Documentation for rryqszq4 projects">
+
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="/css/syntax.css">
+        <link rel="stylesheet" href="/css/main.css">
+    </head>
+    <body>
+
+        <div class="container">
+            <div class="row">
+                <div id="header" class="col-sm-12">
+                    <h4><a class="brand" href="/">rryqszq4</a>
+    <small>Documentation for rryqszq4 projects</small>
+</h4>
+
+                </div>
+            </div>
+
+            <div class="row">
+                
+                
+                    <div id="navigation" class="col-sm-2">
+                        <ul class="nav nav-list">
+    <li><a href="/">Home</a></li>
+    
+        
+        
+
+        
+    
+        
+        
+
+        
+    
+        
+        
+
+        
+    
+        
+        
+
+        
+    
+        
+        
+
+        
+    
+        
+        
+
+        
+            
+                <li class="nav-header">My Projects</li>
+            
+            <li data-order=""><a href="/pro/ngxphp.html">ngx_php</a></li>
+        
+            
+            <li data-order=""><a href="/pro/phpjsonrpc.html">php-jsonrpc</a></li>
+        
+            
+            <li data-order=""><a href="/pro/phpyajl.html">php-yajl</a></li>
+        
+            
+            <li data-order=""><a href="/pro/phpcjson.html">php-cjson</a></li>
+        
+    
+<!-- List additional links. It is recommended to add a divider
+    e.g. <li class="divider"></li> first to break up the content. -->
+</ul>
+
+                    </div>
+
+                    <div id="content" class="col-sm-10">
+                        <h1 id="ngxphp">ngx_php</h1>
+<p><a href="https://travis-ci.org/rryqszq4/ngx_php"><img src="https://travis-ci.org/rryqszq4/ngx_php.svg?branch=master" alt="Build Status" /></a></p>
+
+<p>Embedded php script language for nginx-module.</p>
+
+<h2 id="features">Features</h2>
+<ul>
+  <li>Load php.ini config file</li>
+  <li>Global variable support $_GET, $_POST, $_COOKIE, $_SERVER, $_FILES…</li>
+  <li>PHP script code and file execute</li>
+  <li>RFC 1867 protocol file upload</li>
+  <li>PHP error reporting output</li>
+  <li>Support PECL PHP extension</li>
+</ul>
+
+<h2 id="requirement">Requirement</h2>
+<ul>
+  <li>PHP 5.3.*</li>
+  <li>PHP 5.4.*</li>
+  <li>PHP 5.5.*</li>
+  <li>PHP 5.6.*</li>
+  <li>nginx-1.6.3</li>
+</ul>
+
+<h2 id="install">Install</h2>
+<div class="highlighter-rouge"><pre class="highlight"><code>git clone https://github.com/rryqszq4/ngx_php.git
+<span class="nb">cd </span>ngx_php
+
+wget <span class="s1">'http://nginx.org/download/nginx-1.6.3.tar.gz'</span>
+tar -zxvf nginx-1.6.3.tar.gz
+<span class="nb">cd </span>nginx-1.6.3
+
+<span class="nb">export </span><span class="nv">PHP_BIN</span><span class="o">=</span>/path/to/php/bin
+<span class="nb">export </span><span class="nv">PHP_INC</span><span class="o">=</span>/path/to/php/include/php
+<span class="nb">export </span><span class="nv">PHP_LIB</span><span class="o">=</span>/path/to/php/lib
+
+./configure --user<span class="o">=</span>www --group<span class="o">=</span>www <span class="se">\</span>
+			--prefix<span class="o">=</span>/path/to/nginx <span class="se">\</span>
+			--with-ld-opt<span class="o">=</span><span class="s2">"-Wl,-rpath,</span><span class="nv">$PHP_LIB</span><span class="s2">"</span> <span class="se">\</span>
+			--add-module<span class="o">=</span>/path/to/ngx_php
+</code></pre>
+</div>
+
+<h2 id="synopsis">Synopsis</h2>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">server</span> <span class="p">{</span>
+	<span class="kn">location</span> <span class="n">/php</span> <span class="p">{</span>
+		<span class="kn">php_content_handler_code</span> <span class="s">"</span>
+			<span class="s">echo</span> <span class="s">'hello</span> <span class="s">ngx_php'</span><span class="p">;</span>
+		<span class="kn">"</span><span class="p">;</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>wordpress
+<code class="highlighter-rouge">nginx
+server {
+	location ~ \.php$ {
+        root   /home/www/wordpress;
+        php_content_handler_code "
+            require_once('/home/www/wordpress'.$_SERVER['DOCUMENT_URI']);
+        ";
+    }
+}
+</code></p>
+
+<h2 id="test">Test</h2>
+<p>Using the perl of <a href="https://github.com/openresty/test-nginx">Test::Nginx</a> module to testing, searching and finding out problem in ngx_php.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="nb">cd</span> /path/to/ngx_php
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span>/path/to/nginx/sbin:<span class="nv">$PATH</span>
+prove -r t
+</code></pre>
+</div>
+<p>Test result:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>t/001-hello.t .... ok   
+t/002-ini.t ...... ok   
+t/003-_GET.t ..... ok   
+t/004-_POST.t .... ok   
+t/005-_SERVER.t .. ok   
+t/006-_COOKIE.t .. ok   
+t/007-_FILES.t ... ok   
+t/008-error.t .... ok   
+All tests successful.
+<span class="nv">Files</span><span class="o">=</span>8, <span class="nv">Tests</span><span class="o">=</span>18,  2 wallclock secs <span class="o">(</span> 0.03 usr  0.02 sys +  0.86 cusr  0.33 csys <span class="o">=</span>  1.24 CPU<span class="o">)</span>
+Result: PASS
+</code></pre>
+</div>
+
+<h2 id="copyright-and-license">Copyright and License</h2>
+<p>Copyright (c) 2016, rryqszq4 <a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#112;&#104;&#112;&#110;&#103;&#120;&#064;&#103;&#109;&#097;&#105;&#108;&#046;&#099;&#111;&#109;">&#112;&#104;&#112;&#110;&#103;&#120;&#064;&#103;&#109;&#097;&#105;&#108;&#046;&#099;&#111;&#109;</a>
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+
+<ul>
+  <li>
+    <p>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</p>
+  </li>
+  <li>
+    <p>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</p>
+  </li>
+</ul>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS”
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
+
+
+                    </div>
+                
+            </div>
+
+            
+
+            <div class="row">
+                <div id="footer" class="col-sm-12">
+                    Documentation for <a href="https://github.com/rryqszq4">rryqszq4</a> -- Power by jekyll-docs-template
+
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function orderNav() {
+                var list,
+                    section,
+                    header,
+                    sections = [],
+                    lists = {},
+                    headers = {};
+
+                var navUl = document.querySelectorAll('#navigation ul')[0],
+                    navLis = document.querySelectorAll('#navigation ul li');
+
+                if (!navUl) return;
+
+                for (var i = 0; i < navLis.length; i++) {
+                    var order, li = navLis[i];
+
+                    if (li.classList.contains('nav-header')) {
+                        section = li.textContent || li.innerText;
+                        sections.push(section);
+                        headers[section] = li;
+                        continue;
+                    }
+
+                    if (!lists[section]) {
+                        lists[section] = [];
+                    }
+
+                    order = parseFloat(li.getAttribute('data-order'))
+                    lists[section].push([order, li]);
+                }
+
+                for (var i = 0; i < sections.length; i++) {
+                    section = sections[i];
+                    list = lists[section].sort(function(a, b) {
+                        return a[0] - b[0];
+                    });
+
+                    if (header = headers[section]) {
+                        navUl.appendChild(header);
+                    }
+                    for (var j = 0; j < list.length; j++) {
+                        navUl.appendChild(list[j][1]);
+                    }
+                }
+            }
+
+            if (document.querySelectorAll) orderNav();
+        </script>
+        
+    </body>
+</html>

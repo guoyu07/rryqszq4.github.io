@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width">
+
+        <title>rryqszq4 : php-jsonrpc</title>
+        <meta name="description" content="Documentation for rryqszq4 projects">
+
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="/css/syntax.css">
+        <link rel="stylesheet" href="/css/main.css">
+    </head>
+    <body>
+
+        <div class="container">
+            <div class="row">
+                <div id="header" class="col-sm-12">
+                    <h4><a class="brand" href="/">rryqszq4</a>
+    <small>Documentation for rryqszq4 projects</small>
+</h4>
+
+                </div>
+            </div>
+
+            <div class="row">
+                
+                
+                    <div id="navigation" class="col-sm-2">
+                        <ul class="nav nav-list">
+    <li><a href="/">Home</a></li>
+    
+        
+        
+
+        
+    
+        
+        
+
+        
+    
+        
+        
+
+        
+    
+        
+        
+
+        
+    
+        
+        
+
+        
+    
+        
+        
+
+        
+            
+                <li class="nav-header">My Projects</li>
+            
+            <li data-order=""><a href="/pro/ngxphp.html">ngx_php</a></li>
+        
+            
+            <li data-order=""><a href="/pro/phpjsonrpc.html">php-jsonrpc</a></li>
+        
+            
+            <li data-order=""><a href="/pro/phpyajl.html">php-yajl</a></li>
+        
+            
+            <li data-order=""><a href="/pro/phpcjson.html">php-cjson</a></li>
+        
+    
+<!-- List additional links. It is recommended to add a divider
+    e.g. <li class="divider"></li> first to break up the content. -->
+</ul>
+
+                    </div>
+
+                    <div id="content" class="col-sm-10">
+                        <h1 id="jsonrpc-20-client-and-server">JsonRPC 2.0 Client and Server</h1>
+
+<p><a href="https://travis-ci.org/rryqszq4/JsonRPC"><img src="https://travis-ci.org/rryqszq4/JsonRPC.svg" alt="Build Status" /></a></p>
+
+<p>Lightweight, fast multi Json-RPC 2.0 client/server in php extension, base on multi_curl and epoll of the Client. Coroutine in async of writeback, just look like the sync of php response and it is. Jsonrpc_Server support php-fpm or swoole Compliance <a href="http://www.jsonrpc.org/">http://www.jsonrpc.org/</a> protocol specification. <a href="https://github.com/rryqszq4/JsonRPC/blob/master/README-cn.md">中文</a></p>
+
+<p><a href="https://github.com/rryqszq4/php7-ext-jsonrpc">jsonrpc in php7</a></p>
+
+<h2 id="features">Features</h2>
+<ul>
+  <li>JSON-RPC 2.0 protocol</li>
+  <li>Base on curl and epoll of the multi client</li>
+  <li>Persistent epoll in php-fpm</li>
+  <li>Persistent curl_multi queue in php-fpm</li>
+  <li>Default use JSON parse/generate library YAJL</li>
+  <li>Support message and notification</li>
+  <li>Linux only(need to epoll)</li>
+</ul>
+
+<h2 id="requirement">Requirement</h2>
+<ul>
+  <li>PHP 5.3.*</li>
+  <li>PHP 5.4.*</li>
+  <li>PHP 5.5.*</li>
+  <li>PHP 5.6.*</li>
+</ul>
+
+<h2 id="install">Install</h2>
+<div class="highlighter-rouge"><pre class="highlight"><code>$/path/to/phpize
+$./configure --with-php-config=/path/to/php-config
+$make &amp;&amp; make install
+</code></pre>
+</div>
+
+<h2 id="server">Server</h2>
+<p><strong>Interface</strong></p>
+
+<ul>
+  <li>Jsonrpc_Server::__construct(mixed $payload, array $callbacks, array $classes)</li>
+  <li>Jsonrpc_Server::register(string $name, mixed $closure)</li>
+  <li>Jsonrpc_Server::bind(string $procedure, mixed $classname, string $method)</li>
+  <li>Jsonrpc_Server::jsonformat()</li>
+  <li>Jsonrpc_Server::rpcformat(mixed $payload)</li>
+  <li>Jsonrpc_Server::executeprocedure(string $procedure, array $params)</li>
+  <li>Jsonrpc_Server::executecallback(object $closure, array $params)</li>
+  <li>Jsonrpc_Server::executemethod(string $class, string $method, array $params)</li>
+  <li>Jsonrpc_Server::execute(boolean $response_type)</li>
+</ul>
+
+<p><strong>Register Function</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="nv">$server</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Jsonrpc_Server</span><span class="p">();</span>
+
+<span class="c1">// style one function variable
+</span><span class="nv">$add1</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="nv">$a</span><span class="p">,</span> <span class="nv">$b</span><span class="p">){</span>
+  <span class="k">return</span> <span class="nv">$a</span> <span class="o">+</span> <span class="nv">$b</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="nv">$server</span><span class="o">-&gt;</span><span class="na">register</span><span class="p">(</span><span class="s1">'addition1'</span><span class="p">,</span> <span class="nv">$add1</span><span class="p">);</span>
+
+<span class="c1">// style two function string
+</span><span class="k">function</span> <span class="nf">add2</span><span class="p">(</span><span class="nv">$a</span><span class="p">,</span> <span class="nv">$b</span><span class="p">){</span>
+  <span class="k">return</span> <span class="nv">$a</span> <span class="o">+</span> <span class="nv">$b</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nv">$server</span><span class="o">-&gt;</span><span class="na">register</span><span class="p">(</span><span class="s1">'addition2'</span><span class="p">,</span> <span class="s1">'add2'</span><span class="p">);</span>
+
+<span class="c1">// style three function closure
+</span><span class="nv">$server</span><span class="o">-&gt;</span><span class="na">register</span><span class="p">(</span><span class="s1">'addition3'</span><span class="p">,</span> <span class="k">function</span> <span class="p">(</span><span class="nv">$a</span><span class="p">,</span> <span class="nv">$b</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nv">$a</span> <span class="o">+</span> <span class="nv">$b</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="c1">//style four class method string
+</span><span class="k">class</span> <span class="nc">Api</span> 
+<span class="p">{</span>
+  <span class="k">static</span> <span class="k">public</span> <span class="k">function</span> <span class="nf">add</span><span class="p">(</span><span class="nv">$a</span><span class="p">,</span> <span class="nv">$b</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="k">return</span> <span class="nv">$a</span> <span class="o">+</span> <span class="nv">$b</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="nv">$server</span><span class="o">-&gt;</span><span class="na">register</span><span class="p">(</span><span class="s1">'addition4'</span><span class="p">,</span> <span class="s1">'Api::add'</span><span class="p">);</span>
+
+<span class="k">echo</span> <span class="nv">$server</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+
+<span class="c1">//output &gt;&gt;&gt;
+//{"jsonrpc":"2.0","id":null,"error":{"code":-32700,"message":"Parse error"}}
+</span>
+<span class="cp">?&gt;</span>
+</code></pre>
+</div>
+
+<p><strong>Bind Method</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="nv">$server</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Jsonrpc_Server</span><span class="p">();</span>
+
+<span class="k">class</span> <span class="nc">Api</span>
+<span class="p">{</span>
+  <span class="k">static</span> <span class="k">public</span> <span class="k">function</span> <span class="nf">add</span><span class="p">(</span><span class="nv">$a</span><span class="p">,</span> <span class="nv">$b</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="k">return</span> <span class="nv">$a</span> <span class="o">+</span> <span class="nv">$b</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">public</span> <span class="k">function</span> <span class="nf">newadd</span><span class="p">(</span><span class="nv">$a</span><span class="p">,</span><span class="nv">$b</span><span class="p">){</span>
+    <span class="k">return</span> <span class="nv">$a</span> <span class="o">+</span> <span class="nv">$b</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nv">$server</span><span class="o">-&gt;</span><span class="na">bind</span><span class="p">(</span><span class="s1">'addition5'</span><span class="p">,</span> <span class="s1">'Api'</span><span class="p">,</span> <span class="s1">'add'</span><span class="p">);</span>
+
+<span class="nv">$server</span><span class="o">-&gt;</span><span class="na">bind</span><span class="p">(</span><span class="s1">'addition6'</span><span class="p">,</span> <span class="nv">$a</span><span class="o">=</span><span class="k">new</span> <span class="nx">Api</span><span class="p">,</span> <span class="s1">'newadd'</span><span class="p">);</span>
+
+<span class="k">echo</span> <span class="nv">$server</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+
+<span class="c1">//output &gt;&gt;&gt;
+//{"jsonrpc":"2.0","id":null,"error":{"code":-32700,"message":"Parse error"}}
+</span>
+<span class="cp">?&gt;</span>
+
+</code></pre>
+</div>
+
+<p><strong>swoole jsonrpc server</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="nv">$http</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">swoole_http_server</span><span class="p">(</span><span class="s2">"127.0.0.1"</span><span class="p">,</span> <span class="mi">9501</span><span class="p">);</span>
+
+<span class="k">function</span> <span class="nf">add</span><span class="p">(</span><span class="nv">$a</span><span class="p">,</span> <span class="nv">$b</span><span class="p">){</span>
+  <span class="k">return</span> <span class="nv">$a</span> <span class="o">+</span> <span class="nv">$b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nv">$http</span><span class="o">-&gt;</span><span class="na">on</span><span class="p">(</span><span class="s1">'Request'</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="nv">$request</span><span class="p">,</span> <span class="nv">$response</span><span class="p">){</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nv">$request</span><span class="o">-&gt;</span><span class="na">server</span><span class="p">[</span><span class="s1">'request_uri'</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"/jsonrpc_server"</span><span class="p">){</span>
+    <span class="nv">$payload</span> <span class="o">=</span> <span class="nv">$request</span><span class="o">-&gt;</span><span class="na">rawContent</span><span class="p">();</span>
+    
+    <span class="nv">$jsr_server</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Jsonrpc_Server</span><span class="p">(</span><span class="nv">$payload</span><span class="p">);</span>
+    <span class="nv">$jsr_server</span><span class="o">-&gt;</span><span class="na">register</span><span class="p">(</span><span class="s1">'addition'</span><span class="p">,</span> <span class="s1">'add'</span><span class="p">);</span>
+    <span class="nv">$res</span> <span class="o">=</span> <span class="nv">$jsr_server</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+    <span class="nv">$response</span><span class="o">-&gt;</span><span class="na">end</span><span class="p">(</span><span class="nv">$res</span><span class="p">);</span>
+
+    <span class="nb">unset</span><span class="p">(</span><span class="nv">$payload</span><span class="p">);</span>
+    <span class="nb">unset</span><span class="p">(</span><span class="nv">$jsr_server</span><span class="p">);</span>
+    <span class="nb">unset</span><span class="p">(</span><span class="nv">$res</span><span class="p">);</span>
+  <span class="p">}</span><span class="k">else</span> <span class="p">{</span>
+          <span class="nv">$response</span><span class="o">-&gt;</span><span class="na">end</span><span class="p">(</span><span class="s2">"error"</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+<span class="nv">$http</span><span class="o">-&gt;</span><span class="na">start</span><span class="p">();</span>
+<span class="cp">?&gt;</span>
+</code></pre>
+</div>
+
+<h2 id="client">Client</h2>
+<p><strong>Interface</strong></p>
+
+<ul>
+  <li>Jsonrpc_Client::__construct(boolean $persist)</li>
+  <li>Jsonrpc_Client::call(string $url, string $procedure, array $params, mixed $id)</li>
+  <li>Jsonrpc_Client::connect(string $url)</li>
+  <li>Jsonrpc_Client::__call(string $procedure, array $params)</li>
+  <li>Jsonrpc_Client::execute(boolean $response_type)</li>
+  <li>Jsonrpc_Client::authentication(string $username, string $password)</li>
+  <li>Jsonrpc_Client::__destruct()</li>
+</ul>
+
+<p><strong>Persistent</strong></p>
+
+<blockquote>
+  <p>Jsonrpc_client(1) 
+When two resource epoll and curl_multi queue persist, the parame is 1. The default use of non-persistent.</p>
+</blockquote>
+
+<p><strong>Connect Call</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Jsonrpc_Client</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="nv">$client</span><span class="o">-&gt;</span><span class="na">connect</span><span class="p">(</span><span class="s1">'http://localhost/server.php'</span><span class="p">);</span>
+<span class="nv">$client</span><span class="o">-&gt;</span><span class="na">addition1</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">);</span>
+<span class="nv">$result</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+
+<span class="cp">?&gt;</span>
+</code></pre>
+</div>
+
+<p><strong>Multi Call</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Jsonrpc_Client</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="nv">$client</span><span class="o">-&gt;</span><span class="na">call</span><span class="p">(</span><span class="s1">'http://localhost/server.php'</span><span class="p">,</span> <span class="s1">'addition1'</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">));</span>
+<span class="nv">$client</span><span class="o">-&gt;</span><span class="na">call</span><span class="p">(</span><span class="s1">'http://localhost/server.php'</span><span class="p">,</span> <span class="s1">'addition2'</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">));</span>
+
+<span class="cm">/* ... */</span>
+<span class="nv">$result</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+
+<span class="nb">var_dump</span><span class="p">(</span><span class="nv">$result</span><span class="p">);</span>
+
+<span class="c1">//output &gt;&gt;&gt;
+</span><span class="cm">/*
+array(2) {
+  [0]=&gt;
+  array(3) {
+    ["jsonrpc"]=&gt;
+    string(3) "2.0"
+    ["id"]=&gt;
+    int(110507766)
+    ["result"]=&gt;
+    int(8)
+  }
+  [1]=&gt;
+  array(3) {
+    ["jsonrpc"]=&gt;
+    string(3) "2.0"
+    ["id"]=&gt;
+    int(1559316299)
+    ["result"]=&gt;
+    int(30)
+  }
+  ...
+}
+*/</span>
+<span class="cp">?&gt;</span>
+</code></pre>
+</div>
+<p><strong>Custom ID</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Jsonrpc_client</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="nv">$client</span><span class="o">-&gt;</span><span class="na">call</span><span class="p">(</span><span class="s1">'http://localhost/server.php'</span><span class="p">,</span> <span class="s1">'addition'</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="s2">"custom_id_001"</span><span class="p">);</span>
+<span class="nv">$result</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+<span class="nb">var_dump</span><span class="p">(</span><span class="nv">$result</span><span class="p">);</span>
+
+<span class="c1">//output &gt;&gt;&gt;
+</span><span class="cm">/*
+array(1) {
+  [0]=&gt;
+  array(3) {
+    ["jsonrpc"]=&gt;
+    string(3) "2.0"
+    ["id"]=&gt;
+    string(13) "custom_id_001"
+    ["result"]=&gt;
+    int(8)
+  }
+}
+*/</span>
+<span class="cp">?&gt;</span>
+</code></pre>
+</div>
+
+<p><strong>Authentication</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Jsonrpc_Client</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+
+<span class="nv">$client</span><span class="o">-&gt;</span><span class="na">authentication</span><span class="p">(</span><span class="s2">"Username: username"</span><span class="p">,</span> <span class="s2">"Password: password"</span><span class="p">);</span>
+
+<span class="nv">$client</span><span class="o">-&gt;</span><span class="na">call</span><span class="p">(</span><span class="s1">'http://localhost/server.php'</span><span class="p">,</span> <span class="s1">'addition1'</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">));</span>
+<span class="nv">$result</span> <span class="o">=</span> <span class="nv">$client</span><span class="o">-&gt;</span><span class="na">execute</span><span class="p">();</span>
+
+<span class="cp">?&gt;</span>
+</code></pre>
+</div>
+
+<h2 id="yajl-generateparse">YAJL generate/parse</h2>
+<p><strong>Interface</strong></p>
+
+<ul>
+  <li>Jsonrpc_Yajl::generate(array $array)</li>
+  <li>Jsonrpc_Yajl::parse(string $json)</li>
+</ul>
+
+<p><strong>generate</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="nv">$arr</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+    <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">"string"</span><span class="p">,</span>
+    <span class="k">array</span><span class="p">(</span><span class="s2">"key"</span><span class="o">=&gt;</span><span class="s2">"value"</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="nb">var_dump</span><span class="p">(</span><span class="nx">Jsonrpc_Yajl</span><span class="o">::</span><span class="na">generate</span><span class="p">(</span><span class="nv">$arr</span><span class="p">));</span>
+
+<span class="cm">/* ==&gt;output
+string(28) "[1,"string",{"key":"value"}]";
+*/</span>
+
+<span class="cp">?&gt;</span>
+</code></pre>
+</div>
+
+<p><strong>parse</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="nv">$str</span> <span class="o">=</span> <span class="s1">'[1,"string",{"key":"value"}]'</span><span class="p">;</span>
+
+<span class="nb">var_dump</span><span class="p">(</span><span class="nx">Jsonrpc_Yajl</span><span class="o">::</span><span class="na">parse</span><span class="p">(</span><span class="nv">$str</span><span class="p">));</span>
+
+<span class="cm">/* ==&gt;output
+array(3) {
+  [0]=&gt;
+  int(1)
+  [1]=&gt;
+  string(6) "string"
+  [2]=&gt;
+  array(1) {
+    ["key"]=&gt;
+    string(5) "value"
+  }
+}
+*/</span>
+
+<span class="cp">?&gt;</span>
+</code></pre>
+</div>
+
+<h2 id="error-info">Error Info</h2>
+<p><strong>jsonrpc 2.0 Error</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">// Parse error</span>
+<span class="p">{</span><span class="s2">"jsonrpc"</span><span class="err">:</span><span class="s2">"2.0"</span><span class="p">,</span><span class="s2">"id"</span><span class="err">:</span><span class="kc">null</span><span class="p">,</span><span class="s2">"error"</span><span class="err">:</span><span class="p">{</span><span class="s2">"code"</span><span class="err">:</span><span class="o">-</span><span class="mi">32700</span><span class="p">,</span><span class="s2">"message"</span><span class="err">:</span><span class="s2">"Parse error"</span><span class="p">}}</span>
+
+<span class="c1">// Invalid Request</span>
+<span class="p">{</span><span class="s2">"jsonrpc"</span><span class="err">:</span><span class="s2">"2.0"</span><span class="p">,</span><span class="s2">"id"</span><span class="err">:</span><span class="kc">null</span><span class="p">,</span><span class="s2">"error"</span><span class="err">:</span><span class="p">{</span><span class="s2">"code"</span><span class="err">:</span><span class="o">-</span><span class="mi">32600</span><span class="p">,</span><span class="s2">"message"</span><span class="err">:</span><span class="s2">"Invalid Request"</span><span class="p">}}</span>
+
+<span class="c1">// Method not found</span>
+<span class="p">{</span><span class="s2">"jsonrpc"</span><span class="err">:</span><span class="s2">"2.0"</span><span class="p">,</span><span class="s2">"id"</span><span class="err">:</span><span class="kc">null</span><span class="p">,</span><span class="s2">"error"</span><span class="err">:</span><span class="p">{</span><span class="s2">"code"</span><span class="err">:</span><span class="o">-</span><span class="mi">32601</span><span class="p">,</span><span class="s2">"message"</span><span class="err">:</span><span class="s2">"Method not found"</span><span class="p">}}</span>
+
+<span class="c1">// Invalid params</span>
+<span class="p">{</span><span class="s2">"jsonrpc"</span><span class="err">:</span><span class="s2">"2.0"</span><span class="p">,</span><span class="s2">"id"</span><span class="err">:</span><span class="kc">null</span><span class="p">,</span><span class="s2">"error"</span><span class="err">:</span><span class="p">{</span><span class="s2">"code"</span><span class="err">:</span><span class="o">-</span><span class="mi">32602</span><span class="p">,</span><span class="s2">"message"</span><span class="err">:</span><span class="s2">"Invalid params"</span><span class="p">}}</span>
+
+<span class="c1">//</span>
+</code></pre>
+</div>
+
+<p><strong>HTTP Error</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">// 400</span>
+<span class="p">{</span><span class="s2">"jsonrpc"</span><span class="err">:</span><span class="s2">"2.0"</span><span class="p">,</span><span class="s2">"id"</span><span class="err">:</span><span class="kc">null</span><span class="p">,</span><span class="s2">"error"</span><span class="err">:</span><span class="p">{</span><span class="s2">"code"</span><span class="err">:</span><span class="o">-</span><span class="mi">32400</span><span class="p">,</span><span class="s2">"message"</span><span class="err">:</span><span class="s2">"Bad Request"</span><span class="p">}}</span>
+<span class="c1">// 401</span>
+<span class="p">{</span><span class="s2">"jsonrpc"</span><span class="err">:</span><span class="s2">"2.0"</span><span class="p">,</span><span class="s2">"id"</span><span class="err">:</span><span class="kc">null</span><span class="p">,</span><span class="s2">"error"</span><span class="err">:</span><span class="p">{</span><span class="s2">"code"</span><span class="err">:</span><span class="o">-</span><span class="mi">32401</span><span class="p">,</span><span class="s2">"message"</span><span class="err">:</span><span class="s2">"Unauthorized"</span><span class="p">}}</span>
+<span class="c1">// 403</span>
+<span class="p">{</span><span class="s2">"jsonrpc"</span><span class="err">:</span><span class="s2">"2.0"</span><span class="p">,</span><span class="s2">"id"</span><span class="err">:</span><span class="kc">null</span><span class="p">,</span><span class="s2">"error"</span><span class="err">:</span><span class="p">{</span><span class="s2">"code"</span><span class="err">:</span><span class="o">-</span><span class="mi">32403</span><span class="p">,</span><span class="s2">"message"</span><span class="err">:</span><span class="s2">"Forbidden"</span><span class="p">}}</span>
+<span class="c1">// 404</span>
+<span class="p">{</span><span class="s2">"jsonrpc"</span><span class="err">:</span><span class="s2">"2.0"</span><span class="p">,</span><span class="s2">"id"</span><span class="err">:</span><span class="kc">null</span><span class="p">,</span><span class="s2">"error"</span><span class="err">:</span><span class="p">{</span><span class="s2">"code"</span><span class="err">:</span><span class="o">-</span><span class="mi">32404</span><span class="p">,</span><span class="s2">"message"</span><span class="err">:</span><span class="s2">"Not Found"</span><span class="p">}}</span>
+
+<span class="c1">// 500</span>
+<span class="p">{</span><span class="s2">"jsonrpc"</span><span class="err">:</span><span class="s2">"2.0"</span><span class="p">,</span><span class="s2">"id"</span><span class="err">:</span><span class="kc">null</span><span class="p">,</span><span class="s2">"error"</span><span class="err">:</span><span class="p">{</span><span class="s2">"code"</span><span class="err">:</span><span class="o">-</span><span class="mi">32500</span><span class="p">,</span><span class="s2">"message"</span><span class="err">:</span><span class="s2">"Internal Server Error"</span><span class="p">}}</span>
+<span class="c1">// 502</span>
+<span class="p">{</span><span class="s2">"jsonrpc"</span><span class="err">:</span><span class="s2">"2.0"</span><span class="p">,</span><span class="s2">"id"</span><span class="err">:</span><span class="kc">null</span><span class="p">,</span><span class="s2">"error"</span><span class="err">:</span><span class="p">{</span><span class="s2">"code"</span><span class="err">:</span><span class="o">-</span><span class="mi">32502</span><span class="p">,</span><span class="s2">"message"</span><span class="err">:</span><span class="s2">"Bad Gateway"</span><span class="p">}}</span>
+<span class="p">...</span>
+
+<span class="c1">// unknow</span>
+<span class="p">{</span><span class="s2">"jsonrpc"</span><span class="err">:</span><span class="s2">"2.0"</span><span class="p">,</span><span class="s2">"id"</span><span class="err">:</span><span class="kc">null</span><span class="p">,</span><span class="s2">"error"</span><span class="err">:</span><span class="p">{</span><span class="s2">"code"</span><span class="err">:</span><span class="o">-</span><span class="mi">32599</span><span class="p">,</span><span class="s2">"message"</span><span class="err">:</span><span class="s2">"HTTP Unknow"</span><span class="p">}}</span>
+</code></pre>
+</div>
+
+<p><strong>Curl Error</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">// 1 CURLE_UNSUPPORTED_PROTOCOL</span>
+<span class="p">{</span><span class="s2">"jsonrpc"</span><span class="err">:</span><span class="s2">"2.0"</span><span class="p">,</span><span class="s2">"id"</span><span class="err">:</span><span class="kc">null</span><span class="p">,</span><span class="s2">"error"</span><span class="err">:</span><span class="p">{</span><span class="s2">"code"</span><span class="err">:</span><span class="o">-</span><span class="mi">32001</span><span class="p">,</span><span class="s2">"message"</span><span class="err">:</span><span class="s2">"Curl Unsupported Protocol"</span><span class="p">}}</span>
+
+<span class="c1">// 2 CURLE_FAILED_INIT</span>
+<span class="p">{</span><span class="s2">"jsonrpc"</span><span class="err">:</span><span class="s2">"2.0"</span><span class="p">,</span><span class="s2">"id"</span><span class="err">:</span><span class="kc">null</span><span class="p">,</span><span class="s2">"error"</span><span class="err">:</span><span class="p">{</span><span class="s2">"code"</span><span class="err">:</span><span class="o">-</span><span class="mi">32002</span><span class="p">,</span><span class="s2">"message"</span><span class="err">:</span><span class="s2">"Curl Failed Init"</span><span class="p">}}</span>
+
+<span class="c1">// 3 CURLE_URL_MALFORMAT</span>
+<span class="p">{</span><span class="s2">"jsonrpc"</span><span class="err">:</span><span class="s2">"2.0"</span><span class="p">,</span><span class="s2">"id"</span><span class="err">:</span><span class="kc">null</span><span class="p">,</span><span class="s2">"error"</span><span class="err">:</span><span class="p">{</span><span class="s2">"code"</span><span class="err">:</span><span class="o">-</span><span class="mi">32003</span><span class="p">,</span><span class="s2">"message"</span><span class="err">:</span><span class="s2">"Curl Url Malformat"</span><span class="p">}}</span>
+
+<span class="c1">// 4</span>
+<span class="p">{</span><span class="s2">"jsonrpc"</span><span class="err">:</span><span class="s2">"2.0"</span><span class="p">,</span><span class="s2">"id"</span><span class="err">:</span><span class="kc">null</span><span class="p">,</span><span class="s2">"error"</span><span class="err">:</span><span class="p">{</span><span class="s2">"code"</span><span class="err">:</span><span class="o">-</span><span class="mi">32004</span><span class="p">,</span><span class="s2">"message"</span><span class="err">:</span><span class="s2">"Curl Not Built In"</span><span class="p">}}</span>
+
+<span class="c1">// 5 CURLE_COULDNT_RESOLVE_PROXY</span>
+<span class="p">{</span><span class="s2">"jsonrpc"</span><span class="err">:</span><span class="s2">"2.0"</span><span class="p">,</span><span class="s2">"id"</span><span class="err">:</span><span class="kc">null</span><span class="p">,</span><span class="s2">"error"</span><span class="err">:</span><span class="p">{</span><span class="s2">"code"</span><span class="err">:</span><span class="o">-</span><span class="mi">32005</span><span class="p">,</span><span class="s2">"message"</span><span class="err">:</span><span class="s2">"Curl Couldnt Resolve Proxy"</span><span class="p">}}</span>
+
+<span class="c1">// 6 CURLE_COULDNT_RESOLVE_HOST</span>
+<span class="p">{</span><span class="s2">"jsonrpc"</span><span class="err">:</span><span class="s2">"2.0"</span><span class="p">,</span><span class="s2">"id"</span><span class="err">:</span><span class="kc">null</span><span class="p">,</span><span class="s2">"error"</span><span class="err">:</span><span class="p">{</span><span class="s2">"code"</span><span class="err">:</span><span class="o">-</span><span class="mi">32006</span><span class="p">,</span><span class="s2">"message"</span><span class="err">:</span><span class="s2">"Curl Couldnt Resolve Host"</span><span class="p">}}</span>
+
+<span class="c1">// 7 CURLE_COULDNT_CONNECT</span>
+<span class="p">{</span><span class="s2">"jsonrpc"</span><span class="err">:</span><span class="s2">"2.0"</span><span class="p">,</span><span class="s2">"id"</span><span class="err">:</span><span class="kc">null</span><span class="p">,</span><span class="s2">"error"</span><span class="err">:</span><span class="p">{</span><span class="s2">"code"</span><span class="err">:</span><span class="o">-</span><span class="mi">32007</span><span class="p">,</span><span class="s2">"message"</span><span class="err">:</span><span class="s2">"Curl Couldnt Connect"</span><span class="p">}}</span>
+<span class="p">...</span>
+
+<span class="c1">// CURL ERROR UNKNOW</span>
+<span class="p">{</span><span class="s2">"jsonrpc"</span><span class="err">:</span><span class="s2">"2.0"</span><span class="p">,</span><span class="s2">"id"</span><span class="err">:</span><span class="kc">null</span><span class="p">,</span><span class="s2">"error"</span><span class="err">:</span><span class="p">{</span><span class="s2">"code"</span><span class="err">:</span><span class="o">-</span><span class="mi">32099</span><span class="p">,</span><span class="s2">"message"</span><span class="err">:</span><span class="s2">"Curl Error Unknow"</span><span class="p">}}</span>
+</code></pre>
+</div>
+
+
+                    </div>
+                
+            </div>
+
+            
+
+            <div class="row">
+                <div id="footer" class="col-sm-12">
+                    Documentation for <a href="https://github.com/rryqszq4">rryqszq4</a> -- Power by jekyll-docs-template
+
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function orderNav() {
+                var list,
+                    section,
+                    header,
+                    sections = [],
+                    lists = {},
+                    headers = {};
+
+                var navUl = document.querySelectorAll('#navigation ul')[0],
+                    navLis = document.querySelectorAll('#navigation ul li');
+
+                if (!navUl) return;
+
+                for (var i = 0; i < navLis.length; i++) {
+                    var order, li = navLis[i];
+
+                    if (li.classList.contains('nav-header')) {
+                        section = li.textContent || li.innerText;
+                        sections.push(section);
+                        headers[section] = li;
+                        continue;
+                    }
+
+                    if (!lists[section]) {
+                        lists[section] = [];
+                    }
+
+                    order = parseFloat(li.getAttribute('data-order'))
+                    lists[section].push([order, li]);
+                }
+
+                for (var i = 0; i < sections.length; i++) {
+                    section = sections[i];
+                    list = lists[section].sort(function(a, b) {
+                        return a[0] - b[0];
+                    });
+
+                    if (header = headers[section]) {
+                        navUl.appendChild(header);
+                    }
+                    for (var j = 0; j < list.length; j++) {
+                        navUl.appendChild(list[j][1]);
+                    }
+                }
+            }
+
+            if (document.querySelectorAll) orderNav();
+        </script>
+        
+    </body>
+</html>
