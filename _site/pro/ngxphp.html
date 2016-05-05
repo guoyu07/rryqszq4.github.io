@@ -126,6 +126,8 @@ tar -zxvf nginx-1.6.3.tar.gz
 </div>
 
 <h2 id="synopsis">Synopsis</h2>
+<p>simple:</p>
+
 <div class="highlighter-rouge"><pre class="highlight"><code><span class="k">server</span> <span class="p">{</span>
 	<span class="kn">location</span> <span class="n">/php</span> <span class="p">{</span>
 		<span class="kn">php_content_handler_code</span> <span class="s">"</span>
@@ -136,17 +138,18 @@ tar -zxvf nginx-1.6.3.tar.gz
 </code></pre>
 </div>
 
-<p>wordpress
-<code class="highlighter-rouge">nginx
-server {
-	location ~ \.php$ {
-        root   /home/www/wordpress;
-        php_content_handler_code "
-            require_once('/home/www/wordpress'.$_SERVER['DOCUMENT_URI']);
-        ";
-    }
-}
-</code></p>
+<p>wordpress:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">server</span> <span class="p">{</span>
+	<span class="kn">location</span> <span class="p">~</span> <span class="sr">\.php$</span> <span class="p">{</span>
+        <span class="kn">root</span>   <span class="n">/home/www/wordpress</span><span class="p">;</span>
+        <span class="kn">php_content_handler_code</span> <span class="s">"</span>
+            <span class="s">require_once('/home/www/wordpress'.</span><span class="nv">$_SERVER</span><span class="s">['DOCUMENT_URI'])</span><span class="p">;</span>
+        <span class="kn">"</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
 
 <h2 id="test">Test</h2>
 <p>Using the perl of <a href="https://github.com/openresty/test-nginx">Test::Nginx</a> module to testing, searching and finding out problem in ngx_php.</p>
@@ -166,6 +169,7 @@ t/005-_SERVER.t .. ok
 t/006-_COOKIE.t .. ok   
 t/007-_FILES.t ... ok   
 t/008-error.t .... ok   
+t/009-session.t .. ok  
 All tests successful.
 <span class="nv">Files</span><span class="o">=</span>8, <span class="nv">Tests</span><span class="o">=</span>18,  2 wallclock secs <span class="o">(</span> 0.03 usr  0.02 sys +  0.86 cusr  0.33 csys <span class="o">=</span>  1.24 CPU<span class="o">)</span>
 Result: PASS
