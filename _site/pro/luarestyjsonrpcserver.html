@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width">
+
+        <title>rryqszq4 : lua-resty-jsonrpc-server</title>
+        <meta name="description" content="Documentation for rryqszq4 projects">
+
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="/css/syntax.css">
+        <link rel="stylesheet" href="/css/main.css">
+    </head>
+    <body>
+
+        <div class="container">
+            <div class="row">
+                <div id="header" class="col-sm-12">
+                    <h4><a class="brand" href="/">rryqszq4</a>
+    <small>Documentation for rryqszq4 projects</small>
+</h4>
+
+                </div>
+            </div>
+
+            <div class="row">
+                
+                
+                    <div id="navigation" class="col-sm-2">
+                        <ul class="nav nav-list">
+    <li><a href="/">Home</a></li>
+    
+        
+        
+
+        
+    
+        
+        
+
+        
+    
+        
+        
+
+        
+    
+        
+        
+
+        
+    
+        
+        
+
+        
+    
+        
+        
+
+        
+            
+                <li class="nav-header">My Projects</li>
+            
+            <li data-order=""><a href="/pro/ngxphp.html">ngx_php</a></li>
+        
+            
+            <li data-order=""><a href="/pro/phpjsonrpc.html">php-jsonrpc</a></li>
+        
+            
+            <li data-order=""><a href="/pro/phpyajl.html">php-yajl</a></li>
+        
+            
+            <li data-order=""><a href="/pro/phpcjson.html">php-cjson</a></li>
+        
+            
+            <li data-order=""><a href="/pro/luarestyjsonrpcserver.html">lua-resty-jsonrpc-server</a></li>
+        
+    
+<!-- List additional links. It is recommended to add a divider
+    e.g. <li class="divider"></li> first to break up the content. -->
+</ul>
+
+                    </div>
+
+                    <div id="content" class="col-sm-10">
+                        <h1 id="lua-resty-jsonrpc-server">lua-resty-jsonrpc-server</h1>
+
+<p><a href="https://github.com/rryqszq4/lua-resty-jsonrpc-server">lua-resty-jsonrpc-server</a> - JsonRPC 2.0 server for ngx_lua</p>
+
+<h1 id="table-of-contents">Table of Contents</h1>
+
+<ul>
+  <li><a href="#lua-resty-jsonrpc-server">Name</a></li>
+  <li><a href="#description">Description</a></li>
+  <li><a href="#synopsis">Synopsis</a></li>
+  <li><a href="#curl-test">Curl test</a></li>
+  <li><a href="#methods">Methods</a>
+    <ul>
+      <li><a href="#new">new</a></li>
+      <li><a href="#register">register</a></li>
+      <li><a href="#bind">bind</a></li>
+      <li><a href="#json_format">json_format</a></li>
+      <li><a href="#rpc_format">rpc_format</a></li>
+      <li><a href="#execute_procedure">execute_procedure</a></li>
+      <li><a href="#execute_callback">execute_callback</a></li>
+      <li><a href="#execute_method">execute_method</a></li>
+      <li><a href="#get_response">get_response</a></li>
+      <li><a href="#execute">execute</a></li>
+      <li><a href="#rpc_error">rpc_error</a></li>
+    </ul>
+  </li>
+  <li><a href="#jsonrpc-20-error">Jsonrpc 2.0 error</a></li>
+  <li><a href="#author">Author</a></li>
+  <li><a href="#copyright-and-license">Copyright and License</a></li>
+</ul>
+
+<h1 id="description">Description</h1>
+
+<p>This Lua library is a JsonRPC 2.0 server for the ngx_lua nginx module.</p>
+
+<h1 id="synopsis">Synopsis</h1>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">lua_package_path</span> <span class="s2">"/path/to/lua-resty-jsonrpc-server/lib/?.lua;;"</span><span class="p">;</span>
+
+<span class="n">server</span> <span class="p">{</span>
+	<span class="n">location</span> <span class="o">/</span><span class="n">lua</span><span class="o">-</span><span class="n">jsonrpc</span><span class="o">-</span><span class="n">server</span> <span class="p">{</span>
+		<span class="n">default_type</span> <span class="s2">"application/json"</span><span class="p">;</span>
+
+		<span class="n">content_by_lua</span> <span class="s1">'
+	        local jsonrpc_server = require "resty.jsonrpc_server"
+	        local jsonrpc_demo = require "resty.jsonrpc_demo"
+
+	        local server = jsonrpc_server:new()
+
+	        local add1 = function(a, b)
+	                return a + b
+	        end
+
+	        local register = server:register([[addition]], add1)
+
+	        local binder = server:bind([[addition1]], jsonrpc_demo, [[add1]])
+
+	        local result = server:execute()
+	        
+	        ngx.say(result);
+
+		'</span><span class="p">;</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre>
+</div>
+
+<h1 id="curl-test">Curl test</h1>
+
+<p>input
+<code class="highlighter-rouge">sh
+$ curl -d "{\"jsonrpc\":\"2.0\",\"method\":\"addition\", \"params\":[1,5]}" http://localhost/lua-jsonrpc-server
+</code></p>
+
+<p>output
+<code class="highlighter-rouge">sh
+$ {"result":6,"jsonrpc":"2.0","id":"null"}
+</code></p>
+
+<h1 id="methods">Methods</h1>
+
+<h2 id="new">new</h2>
+<p><code class="highlighter-rouge">syntax: server, err = jsonrpc_server:new()</code></p>
+
+<h2 id="register">register</h2>
+<p><code class="highlighter-rouge">syntax: ok, err = jsonrpc_server:register(procedure, closure)</code></p>
+
+<h2 id="bind">bind</h2>
+<p><code class="highlighter-rouge">syntax: ok, err = jsonrpc_server:bind(procedure, classname, method)</code></p>
+
+<h2 id="jsonformat">json_format</h2>
+<p><code class="highlighter-rouge">syntax: ok, err = jsonrpc_server:json_format()</code></p>
+
+<h2 id="rpcformat">rpc_format</h2>
+<p><code class="highlighter-rouge">syntax: ok, err = jsonrpc_server:rpc_format()</code></p>
+
+<h2 id="executeprocedure">execute_procedure</h2>
+<p><code class="highlighter-rouge">syntax: ok, err = jsonrpc_server:execute_procedure(payload_method, payload_params)</code></p>
+
+<h2 id="executecallback">execute_callback</h2>
+<p><code class="highlighter-rouge">syntax: ok, err = jsonrpc_server:execute_callback(method, params)</code></p>
+
+<h2 id="executemethod">execute_method</h2>
+<p><code class="highlighter-rouge">syntax: ok, err = jsonrpc_server:execute_method(method, params)</code></p>
+
+<h2 id="getresponse">get_response</h2>
+<p><code class="highlighter-rouge">syntax: ok, err = jsonrpc_server:get_response(data)</code></p>
+
+<h2 id="execute">execute</h2>
+<p><code class="highlighter-rouge">syntax: ok, err = jsonrpc_server:execute()</code></p>
+
+<h2 id="rpcerror">rpc_error</h2>
+<p><code class="highlighter-rouge">syntax: ok, err = jsonrpc_server:rpc_error(code, message)</code></p>
+
+<h1 id="jsonrpc-20-error">Jsonrpc 2.0 error</h1>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">// Parse error</span>
+<span class="p">{</span><span class="s2">"jsonrpc"</span><span class="err">:</span><span class="s2">"2.0"</span><span class="p">,</span><span class="s2">"id"</span><span class="err">:</span><span class="kc">null</span><span class="p">,</span><span class="s2">"error"</span><span class="err">:</span><span class="p">{</span><span class="s2">"code"</span><span class="err">:</span><span class="o">-</span><span class="mi">32700</span><span class="p">,</span><span class="s2">"message"</span><span class="err">:</span><span class="s2">"Parse error"</span><span class="p">}}</span>
+
+<span class="c1">// Invalid Request</span>
+<span class="p">{</span><span class="s2">"jsonrpc"</span><span class="err">:</span><span class="s2">"2.0"</span><span class="p">,</span><span class="s2">"id"</span><span class="err">:</span><span class="kc">null</span><span class="p">,</span><span class="s2">"error"</span><span class="err">:</span><span class="p">{</span><span class="s2">"code"</span><span class="err">:</span><span class="o">-</span><span class="mi">32600</span><span class="p">,</span><span class="s2">"message"</span><span class="err">:</span><span class="s2">"Invalid Request"</span><span class="p">}}</span>
+
+<span class="c1">// Method not found</span>
+<span class="p">{</span><span class="s2">"jsonrpc"</span><span class="err">:</span><span class="s2">"2.0"</span><span class="p">,</span><span class="s2">"id"</span><span class="err">:</span><span class="kc">null</span><span class="p">,</span><span class="s2">"error"</span><span class="err">:</span><span class="p">{</span><span class="s2">"code"</span><span class="err">:</span><span class="o">-</span><span class="mi">32601</span><span class="p">,</span><span class="s2">"message"</span><span class="err">:</span><span class="s2">"Method not found"</span><span class="p">}}</span>
+
+<span class="c1">// Invalid params</span>
+<span class="p">{</span><span class="s2">"jsonrpc"</span><span class="err">:</span><span class="s2">"2.0"</span><span class="p">,</span><span class="s2">"id"</span><span class="err">:</span><span class="kc">null</span><span class="p">,</span><span class="s2">"error"</span><span class="err">:</span><span class="p">{</span><span class="s2">"code"</span><span class="err">:</span><span class="o">-</span><span class="mi">32602</span><span class="p">,</span><span class="s2">"message"</span><span class="err">:</span><span class="s2">"Invalid params"</span><span class="p">}}</span>
+</code></pre>
+</div>
+
+<h1 id="author">Author</h1>
+
+<p>rryqszq4 <a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#109;&#101;&#109;&#119;&#097;&#114;&#101;&#100;&#064;&#103;&#109;&#097;&#105;&#108;&#046;&#099;&#111;&#109;">&#109;&#101;&#109;&#119;&#097;&#114;&#101;&#100;&#064;&#103;&#109;&#097;&#105;&#108;&#046;&#099;&#111;&#109;</a>.</p>
+
+<h1 id="copyright-and-license">Copyright and License</h1>
+
+<p>Copyright (c) 2015, rryqszq4
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:</p>
+
+<ul>
+  <li>
+    <p>Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.</p>
+  </li>
+  <li>
+    <p>Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.</p>
+  </li>
+</ul>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS”
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
+
+
+                    </div>
+                
+            </div>
+
+            
+
+            <div class="row">
+                <div id="footer" class="col-sm-12">
+                    Documentation for <a href="https://github.com/rryqszq4">rryqszq4</a> -- Power by jekyll-docs-template
+
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function orderNav() {
+                var list,
+                    section,
+                    header,
+                    sections = [],
+                    lists = {},
+                    headers = {};
+
+                var navUl = document.querySelectorAll('#navigation ul')[0],
+                    navLis = document.querySelectorAll('#navigation ul li');
+
+                if (!navUl) return;
+
+                for (var i = 0; i < navLis.length; i++) {
+                    var order, li = navLis[i];
+
+                    if (li.classList.contains('nav-header')) {
+                        section = li.textContent || li.innerText;
+                        sections.push(section);
+                        headers[section] = li;
+                        continue;
+                    }
+
+                    if (!lists[section]) {
+                        lists[section] = [];
+                    }
+
+                    order = parseFloat(li.getAttribute('data-order'))
+                    lists[section].push([order, li]);
+                }
+
+                for (var i = 0; i < sections.length; i++) {
+                    section = sections[i];
+                    list = lists[section].sort(function(a, b) {
+                        return a[0] - b[0];
+                    });
+
+                    if (header = headers[section]) {
+                        navUl.appendChild(header);
+                    }
+                    for (var j = 0; j < list.length; j++) {
+                        navUl.appendChild(list[j][1]);
+                    }
+                }
+            }
+
+            if (document.querySelectorAll) orderNav();
+        </script>
+        
+    </body>
+</html>
