@@ -167,45 +167,47 @@ tar -zxvf nginx-1.6.3.tar.gz
 
 <h2 id="framework-conf">Framework conf</h2>
 
-<p><strong>wordpress:</strong>
-```nginx
-server {
-	listen 80;
-	server_name	wordpress-sample.com;</p>
+<p><strong>wordpress:</strong></p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>location ~ \.php$ {
-    root   /home/www/wordpress;
-    php_content_handler_code "
-        require_once('/home/www/wordpress'.$_SERVER['DOCUMENT_URI']);
-    ";
-} } ```
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">server</span> <span class="p">{</span>
+	<span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
+	<span class="kn">server_name</span>	<span class="s">wordpress-sample.com</span><span class="p">;</span>
+	
+	<span class="kn">location</span> <span class="p">~</span> <span class="sr">\.php$</span> <span class="p">{</span>
+        <span class="kn">root</span>   <span class="n">/home/www/wordpress</span><span class="p">;</span>
+        <span class="kn">php_content_handler_code</span> <span class="s">"</span>
+            <span class="s">require_once('/home/www/wordpress'.</span><span class="nv">$_SERVER</span><span class="s">['DOCUMENT_URI'])</span><span class="p">;</span>
+        <span class="kn">"</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 </code></pre>
 </div>
 
-<p><strong>yaf:</strong>
-```nginx
-server {
-    listen 80;
-	server_name	yaf-sample.com;
-	access_log	logs/yaf-sample.com.access.log;</p>
+<p><strong>yaf:</strong></p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>root /home/www/yaf-sample;
-index index.php index.html;
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">server</span> <span class="p">{</span>
+    <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
+	<span class="kn">server_name</span>	<span class="s">yaf-sample.com</span><span class="p">;</span>
+	<span class="kn">access_log</span>	<span class="nc">logs/yaf-sample</span><span class="s">.com.access.log</span><span class="p">;</span>
 
-location /favicon.ico {
-	log_not_found off;
-}
+	<span class="kn">root</span> <span class="n">/home/www/yaf-sample</span><span class="p">;</span>
+	<span class="kn">index</span> <span class="s">index.php</span> <span class="s">index.html</span><span class="p">;</span>
+	
+	<span class="kn">location</span> <span class="n">/favicon.ico</span> <span class="p">{</span>
+		<span class="kn">log_not_found</span> <span class="no">off</span><span class="p">;</span>
+	<span class="p">}</span>
 
-location / {
-	try_files $uri $uri/ /index.php$is_args$args;
-}
+	<span class="kn">location</span> <span class="n">/</span> <span class="p">{</span>
+		<span class="kn">try_files</span> <span class="nv">$uri</span> <span class="nv">$uri</span><span class="n">/</span> <span class="n">/index.php</span><span class="nv">$is_args$args</span><span class="p">;</span>
+	<span class="p">}</span>
 
-location ~ \.php$ {
-	php_content_handler_code '
-		header("Content-Type: text/html;charset=UTF-8");
-		require_once("/home/www/yaf-sample/index.php");
-	';
-} }   ```
+	<span class="kn">location</span> <span class="p">~</span> <span class="sr">\.php$</span> <span class="p">{</span>
+		<span class="kn">php_content_handler_code</span> <span class="s">'</span>
+			<span class="s">header("Content-Type:</span> <span class="nc">text/html</span><span class="p">;</span><span class="kn">charset=UTF-8"</span><span class="s">)</span><span class="p">;</span>
+			<span class="kn">require_once</span><span class="s">("/home/www/yaf-sample/index.php")</span><span class="p">;</span>
+		<span class="kn">'</span><span class="p">;</span>
+	<span class="p">}</span>
+<span class="p">}</span>  
 </code></pre>
 </div>
 
