@@ -21,14 +21,14 @@ Table of Contents
 	* [new](#new)
 	* [register](#register)
 	* [bind](#bind)
-	* [json_format](#json_format)
-	* [rpc_format](#rpc_format)
-	* [execute_procedure](#execute_procedure)
-	* [execute_callback](#execute_callback)
-	* [execute_method](#execute_method)
-	* [get_response](#get_response)
+	* [json_format](#jsonformat)
+	* [rpc_format](#rpcformat)
+	* [execute_procedure](#executeprocedure)
+	* [execute_callback](#executecallback)
+	* [execute_method](#executemethod)
+	* [get_response](#getresponse)
 	* [execute](#execute)
-	* [rpc_error](#rpc_error)
+	* [rpc_error](#rpcerror)
 * [Jsonrpc 2.0 error](#jsonrpc-20-error)
 * [Author](#author)
 * [Copyright and License](#copyright-and-license)
@@ -78,11 +78,13 @@ Curl test
 =========
 
 input
+
 ```sh
 $ curl -d "{\"jsonrpc\":\"2.0\",\"method\":\"addition\", \"params\":[1,5]}" http://localhost/lua-jsonrpc-server
 ```
 
 output
+
 ```sh
 $ {"result":6,"jsonrpc":"2.0","id":"null"}
 ```

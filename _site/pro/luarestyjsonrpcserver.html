@@ -105,14 +105,14 @@
       <li><a href="#new">new</a></li>
       <li><a href="#register">register</a></li>
       <li><a href="#bind">bind</a></li>
-      <li><a href="#json_format">json_format</a></li>
-      <li><a href="#rpc_format">rpc_format</a></li>
-      <li><a href="#execute_procedure">execute_procedure</a></li>
-      <li><a href="#execute_callback">execute_callback</a></li>
-      <li><a href="#execute_method">execute_method</a></li>
-      <li><a href="#get_response">get_response</a></li>
+      <li><a href="#jsonformat">json_format</a></li>
+      <li><a href="#rpcformat">rpc_format</a></li>
+      <li><a href="#executeprocedure">execute_procedure</a></li>
+      <li><a href="#executecallback">execute_callback</a></li>
+      <li><a href="#executemethod">execute_method</a></li>
+      <li><a href="#getresponse">get_response</a></li>
       <li><a href="#execute">execute</a></li>
-      <li><a href="#rpc_error">rpc_error</a></li>
+      <li><a href="#rpcerror">rpc_error</a></li>
     </ul>
   </li>
   <li><a href="#jsonrpc-20-error">Jsonrpc 2.0 error</a></li>
@@ -159,15 +159,17 @@
 
 <h1 id="curl-test">Curl test</h1>
 
-<p>input
-<code class="highlighter-rouge">sh
-$ curl -d "{\"jsonrpc\":\"2.0\",\"method\":\"addition\", \"params\":[1,5]}" http://localhost/lua-jsonrpc-server
-</code></p>
+<p>input</p>
 
-<p>output
-<code class="highlighter-rouge">sh
-$ {"result":6,"jsonrpc":"2.0","id":"null"}
-</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>curl -d <span class="s2">"{</span><span class="se">\"</span><span class="s2">jsonrpc</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">2.0</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">method</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">addition</span><span class="se">\"</span><span class="s2">, </span><span class="se">\"</span><span class="s2">params</span><span class="se">\"</span><span class="s2">:[1,5]}"</span> http://localhost/lua-jsonrpc-server
+</code></pre>
+</div>
+
+<p>output</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span><span class="o">{</span><span class="s2">"result"</span>:6,<span class="s2">"jsonrpc"</span>:<span class="s2">"2.0"</span>,<span class="s2">"id"</span>:<span class="s2">"null"</span><span class="o">}</span>
+</code></pre>
+</div>
 
 <h1 id="methods">Methods</h1>
 
