@@ -90,18 +90,21 @@
 
                     <div id="content" class="col-sm-10">
                         <h1 id="ngxphp">ngx_php</h1>
-<p><a href="https://travis-ci.org/rryqszq4/ngx_php"><img src="https://travis-ci.org/rryqszq4/ngx_php.svg?branch=master" alt="Build Status" /></a></p>
+<p><a href="https://travis-ci.org/rryqszq4/ngx_php"><img src="https://travis-ci.org/rryqszq4/ngx_php.svg?branch=master" alt="Build Status" /></a> 
+<a href="https://gitter.im/rryqszq4/ngx_php?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge"><img src="https://badges.gitter.im/rryqszq4/ngx_php.svg" alt="Gitter" /></a></p>
 
-<p><a href="https://github.com/rryqszq4/ngx_php">ngx_php</a> - Embedded php script language for nginx-module.</p>
+<p><a href="https://github.com/rryqszq4/ngx_php">ngx_php</a>—Embedded php scripting language for nginx-module.Another name is php-nginx-module. <br />
+QQ group：558795330</p>
 
 <h2 id="features">Features</h2>
 <ul>
   <li>Load php.ini config file</li>
-  <li>Global variable support $_GET, $_POST, $_COOKIE, $_SERVER, $_FILES…</li>
+  <li>Global variable support $_GET, $_POST, $_COOKIE, $_SERVER, $_FILES, $_SESSION…</li>
   <li>PHP script code and file execute</li>
   <li>RFC 1867 protocol file upload</li>
   <li>PHP error reporting output</li>
   <li>Support PECL PHP extension</li>
+  <li>Support Nginx API for php</li>
 </ul>
 
 <h2 id="requirement">Requirement</h2>
@@ -118,7 +121,6 @@ nginx-1.9.15</li>
 
 <h2 id="installation">Installation</h2>
 <div class="highlighter-rouge"><pre class="highlight"><code>git clone https://github.com/rryqszq4/ngx_php.git
-<span class="nb">cd </span>ngx_php
 
 wget <span class="s1">'http://nginx.org/download/nginx-1.6.3.tar.gz'</span>
 tar -zxvf nginx-1.6.3.tar.gz
@@ -129,9 +131,10 @@ tar -zxvf nginx-1.6.3.tar.gz
 <span class="nb">export </span><span class="nv">PHP_LIB</span><span class="o">=</span>/path/to/php/lib
 
 ./configure --user<span class="o">=</span>www --group<span class="o">=</span>www <span class="se">\</span>
-			--prefix<span class="o">=</span>/path/to/nginx <span class="se">\</span>
-			--with-ld-opt<span class="o">=</span><span class="s2">"-Wl,-rpath,</span><span class="nv">$PHP_LIB</span><span class="s2">"</span> <span class="se">\</span>
-			--add-module<span class="o">=</span>/path/to/ngx_php
+            --prefix<span class="o">=</span>/path/to/nginx <span class="se">\</span>
+            --with-ld-opt<span class="o">=</span><span class="s2">"-Wl,-rpath,</span><span class="nv">$PHP_LIB</span><span class="s2">"</span> <span class="se">\</span>
+            --add-module<span class="o">=</span>/path/to/ngx_php/dev/ngx_devel_kit <span class="se">\</span>
+            --add-module<span class="o">=</span>/path/to/ngx_php
 </code></pre>
 </div>
 
@@ -149,69 +152,67 @@ tar -zxvf nginx-1.6.3.tar.gz
     <span class="kn">default_type</span>  <span class="nc">application/octet-stream</span><span class="p">;</span>
 
     <span class="kn">keepalive_timeout</span>  <span class="mi">65</span><span class="p">;</span>
-	
+    
     <span class="kn">client_max_body_size</span> <span class="mi">10m</span><span class="p">;</span>   
     <span class="kn">client_body_buffer_size</span> <span class="mi">4096k</span><span class="p">;</span>
 
     <span class="kn">php_ini_path</span> <span class="n">/usr/local/php/etc/php.ini</span><span class="p">;</span>
 
-	<span class="kn">server</span> <span class="p">{</span>
+    <span class="kn">server</span> <span class="p">{</span>
         <span class="kn">listen</span>       <span class="mi">80</span><span class="p">;</span>
         <span class="kn">server_name</span>  <span class="s">localhost</span><span class="p">;</span>
-	
-		<span class="kn">location</span> <span class="n">/php</span> <span class="p">{</span>
-			<span class="kn">php_content_handler_code</span> <span class="s">'</span>
-				<span class="s">echo</span> <span class="s">"hello</span> <span class="s">ngx_php"</span><span class="p">;</span>
-			<span class="kn">'</span><span class="p">;</span>
-		<span class="p">}</span>
-	<span class="p">}</span>
+    
+        <span class="kn">location</span> <span class="n">/php</span> <span class="p">{</span>
+            <span class="kn">content_by_php</span> <span class="s">'</span>
+                <span class="s">echo</span> <span class="s">"hello</span> <span class="s">ngx_php"</span><span class="p">;</span>
+            <span class="kn">'</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
 <span class="p">}</span>
 </code></pre>
 </div>
 
 <h2 id="framework-conf">Framework conf</h2>
 
-<p><strong>wordpress:</strong></p>
+<p><strong>wordpress :</strong></p>
 
 <div class="highlighter-rouge"><pre class="highlight"><code><span class="k">server</span> <span class="p">{</span>
-	<span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
-	<span class="kn">server_name</span>	<span class="s">wordpress-sample.com</span><span class="p">;</span>
-	
-	<span class="kn">location</span> <span class="p">~</span> <span class="sr">\.php$</span> <span class="p">{</span>
+    <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
+    <span class="kn">server_name</span> <span class="s">wordpress-sample.com</span><span class="p">;</span>
+    
+    <span class="kn">location</span> <span class="p">~</span> <span class="sr">\.php$</span> <span class="p">{</span>
         <span class="kn">root</span>   <span class="n">/home/www/wordpress</span><span class="p">;</span>
-        <span class="kn">php_content_handler_code</span> <span class="s">"</span>
+        <span class="kn">content_by_php</span> <span class="s">"</span>
             <span class="s">require_once('/home/www/wordpress'.</span><span class="nv">$_SERVER</span><span class="s">['DOCUMENT_URI'])</span><span class="p">;</span>
         <span class="kn">"</span><span class="p">;</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </code></pre>
 </div>
+<p><strong>yaf &amp; yii :</strong>
+```nginx
+server {
+    listen 80;
+    server_name yaf-sample.com;
+    access_log  logs/yaf-sample.com.access.log;</p>
 
-<p><strong>yaf:</strong></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>root /home/www/yaf-sample;
+index index.php index.html;
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">server</span> <span class="p">{</span>
-    <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
-	<span class="kn">server_name</span>	<span class="s">yaf-sample.com</span><span class="p">;</span>
-	<span class="kn">access_log</span>	<span class="nc">logs/yaf-sample</span><span class="s">.com.access.log</span><span class="p">;</span>
+location /favicon.ico {
+    log_not_found off;
+}
 
-	<span class="kn">root</span> <span class="n">/home/www/yaf-sample</span><span class="p">;</span>
-	<span class="kn">index</span> <span class="s">index.php</span> <span class="s">index.html</span><span class="p">;</span>
-	
-	<span class="kn">location</span> <span class="n">/favicon.ico</span> <span class="p">{</span>
-		<span class="kn">log_not_found</span> <span class="no">off</span><span class="p">;</span>
-	<span class="p">}</span>
+location / {
+    try_files $uri $uri/ /index.php$is_args$args;
+}
 
-	<span class="kn">location</span> <span class="n">/</span> <span class="p">{</span>
-		<span class="kn">try_files</span> <span class="nv">$uri</span> <span class="nv">$uri</span><span class="n">/</span> <span class="n">/index.php</span><span class="nv">$is_args$args</span><span class="p">;</span>
-	<span class="p">}</span>
-
-	<span class="kn">location</span> <span class="p">~</span> <span class="sr">\.php$</span> <span class="p">{</span>
-		<span class="kn">php_content_handler_code</span> <span class="s">'</span>
-			<span class="s">header("Content-Type:</span> <span class="nc">text/html</span><span class="p">;</span><span class="kn">charset=UTF-8"</span><span class="s">)</span><span class="p">;</span>
-			<span class="kn">require_once</span><span class="s">("/home/www/yaf-sample/index.php")</span><span class="p">;</span>
-		<span class="kn">'</span><span class="p">;</span>
-	<span class="p">}</span>
-<span class="p">}</span>  
+location ~ \.php$ {
+    content_by_php '
+        header("Content-Type: text/html;charset=UTF-8");
+        require_once("/home/www/yaf-sample/index.php");
+    ';
+} }   ```
 </code></pre>
 </div>
 
@@ -240,8 +241,146 @@ Result: PASS
 </code></pre>
 </div>
 
+<h2 id="directives">Directives</h2>
+
+<h4 id="phpinipath">php_ini_path</h4>
+<p><strong>syntax:</strong> <em>php_ini_path &lt;php.ini file path&gt;</em><br />
+<strong>context:</strong> <em>http</em><br />
+<strong>phase:</strong> <em>loading-config</em></p>
+
+<p>加载php配置文件
+<code class="highlighter-rouge">nginx
+php_ini_path /usr/local/php/etc/php.ini;
+</code></p>
+
+<h4 id="initbyphp">init_by_php</h4>
+<p><strong>syntax:</strong> <em>init_by_php &lt;php script code&gt;</em><br />
+<strong>context:</strong> <em>http</em><br />
+<strong>phase:</strong> <em>loading-config</em></p>
+
+<h4 id="initbyphpfile">init_by_php_file</h4>
+<p><strong>syntax:</strong> <em>init_by_php_file &lt;php script file&gt;</em><br />
+<strong>context:</strong> <em>http</em><br />
+<strong>phase:</strong> <em>loading-config</em></p>
+
+<h4 id="rewritebyphp">rewrite_by_php</h4>
+<p><strong>syntax:</strong> <em>rewrite_by_php &lt;php script code&gt;</em><br />
+<strong>context:</strong> <em>http, server, location, location if</em><br />
+<strong>phase:</strong> <em>rewrite</em></p>
+
+<h4 id="rewritebyphpfile">rewrite_by_php_file</h4>
+<p><strong>syntax:</strong> <em>rewrite_by_php_file &lt;php script file&gt;</em><br />
+<strong>context:</strong> <em>http, server, location, location if</em><br />
+<strong>phase:</strong> <em>rewrite</em></p>
+
+<h4 id="accessbyphp">access_by_php</h4>
+<p><strong>syntax:</strong> <em>access_by_php &lt;php script code&gt;</em><br />
+<strong>context:</strong> <em>http, server, location, location if</em><br />
+<strong>phase:</strong> <em>access</em></p>
+
+<h4 id="accessbyphpfile">access_by_php_file</h4>
+<p><strong>syntax:</strong> <em>access_by_php_file &lt;php script file&gt;</em><br />
+<strong>context:</strong> <em>http, server, location, location if</em><br />
+<strong>phase:</strong> <em>access</em></p>
+
+<h4 id="contentbyphp">content_by_php</h4>
+<p><strong>syntax:</strong> <em>content_by_php &lt;php script code&gt;</em><br />
+<strong>context:</strong> <em>http, server, location, location if</em><br />
+<strong>phase:</strong> <em>content</em></p>
+
+<h4 id="contentbyphpfile">content_by_php_file</h4>
+<p><strong>syntax:</strong> <em>content_by_php_file &lt;php script file&gt;</em><br />
+<strong>context:</strong> <em>http, server, location, location if</em><br />
+<strong>phase:</strong> <em>content</em></p>
+
+<h4 id="contentasyncbyphp">content_async_by_php</h4>
+<p><strong>syntax:</strong> <em>content_async_by_php &lt;php script code&gt;</em><br />
+<strong>context:</strong> <em>http, server, location, location if</em><br />
+<strong>phase:</strong> <em>content</em></p>
+
+<p>异步的代码方式去执行非阻塞的php代码调用</p>
+
+<h4 id="contentsyncbyphp">content_sync_by_php</h4>
+<p><strong>syntax:</strong> <em>content_sync_by_php &lt;php script code&gt;</em><br />
+<strong>context:</strong> <em>http, server, location, location if</em><br />
+<strong>phase:</strong> <em>content</em></p>
+
+<h4 id="setbyphp">set_by_php</h4>
+<p><strong>syntax:</strong> <em>set_by_php &lt;php script code&gt;</em><br />
+<strong>context:</strong> <em>server, server if, location, location if</em><br />
+<strong>phase:</strong> <em>content</em></p>
+
+<h4 id="setrunbyphp">set_run_by_php</h4>
+<p><strong>syntax:</strong> <em>set_run_by_php &lt;php script code&gt;</em><br />
+<strong>context:</strong> <em>server, server if, location, location if</em><br />
+<strong>phase:</strong> <em>content</em></p>
+
+<h4 id="setbyphpfile">set_by_php_file</h4>
+<p><strong>syntax:</strong> <em>set_by_php_file &lt;php script file&gt;</em><br />
+<strong>context:</strong> <em>server, server if, location, location if</em><br />
+<strong>phase:</strong> <em>content</em></p>
+
+<h4 id="setrunbyphpfile">set_run_by_php_file</h4>
+<p><strong>syntax:</strong> <em>set_run_by_php_file &lt;php script file&gt;</em><br />
+<strong>context:</strong> <em>server, server if, location, location if</em><br />
+<strong>phase:</strong> <em>content</em></p>
+
+<h2 id="nginx-api-for-php">Nginx API for php</h2>
+
+<h4 id="ngxlocationcaptureasync">ngx_location::capture_async</h4>
+<p><strong>syntax:</strong> <em>ngx_location::capture_async(string $uri, mixed $closure)</em><br />
+<strong>context:</strong> <em>content_async_by_php</em></p>
+
+<p>借助nginx底层强大的subrequest，实现php完全非阻塞的异步代码调用
+<code class="highlighter-rouge">php
+ngx_location::capture_async('/foo', function($callback = 'callback'){
+    echo $callback;
+});
+</code></p>
+
+<h4 id="ngxlocationcapturemultiasync">ngx_location::capture_multi_async</h4>
+<p><strong>syntax:</strong> <em>ngx_location::capture_multi_async(array $uri, mixed $closure)</em><br />
+<strong>context:</strong> <em>content_async_by_php</em></p>
+
+<p>和ngx_location::capture_async相似，但是可以支持完全非阻塞的并行异步代码调用
+<code class="highlighter-rouge">php
+$capture_multi = array(
+    '/foo',
+    '/bar',
+    '/baz'
+);
+ngx_location::capture_multi_async($capture_multi, function($callback = 'callback'){
+    var_dump($callback);
+});
+</code></p>
+
+<h4 id="ngxlocationcapture">ngx_location::capture</h4>
+<p><strong>syntax:</strong> <em>ngx_location::capture(string $uri)</em><br />
+<strong>context:</strong> <em>content_sync_by_php</em></p>
+
+<p>借助nginx底层强大的subrequest，实现php完全非阻塞调用
+<code class="highlighter-rouge">php
+$result = ngx_location::capture('/foo');
+echo $result;
+</code></p>
+
+<h4 id="ngxlocationcapturemulti">ngx_location::capture_multi</h4>
+<p><strong>syntax:</strong> <em>ngx_location::capture_multi(array $uri)</em><br />
+<strong>context:</strong> <em>content_sync_by_php</em></p>
+
+<p>和ngx_location::capture相似，但是可以支持完全非阻塞的并行调用
+<code class="highlighter-rouge">php
+$capture_multi = array(
+    '/foo',
+    '/bar',
+    '/baz'
+);
+$result = ngx_location::capture_multi($capture_multi);
+var_dump($result);
+</code></p>
+
 <h2 id="copyright-and-license">Copyright and License</h2>
-<p>Copyright (c) 2016, rryqszq4 <a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#112;&#104;&#112;&#110;&#103;&#120;&#064;&#103;&#109;&#097;&#105;&#108;&#046;&#099;&#111;&#109;">&#112;&#104;&#112;&#110;&#103;&#120;&#064;&#103;&#109;&#097;&#105;&#108;&#046;&#099;&#111;&#109;</a>
+<p>Copyright (c) 2016, rryqszq4 <a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#110;&#103;&#120;&#112;&#104;&#112;&#064;&#103;&#109;&#097;&#105;&#108;&#046;&#099;&#111;&#109;">&#110;&#103;&#120;&#112;&#104;&#112;&#064;&#103;&#109;&#097;&#105;&#108;&#046;&#099;&#111;&#109;</a>
 All rights reserved.</p>
 
 <p>Redistribution and use in source and binary forms, with or without
