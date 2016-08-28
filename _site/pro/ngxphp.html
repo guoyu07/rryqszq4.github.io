@@ -91,9 +91,10 @@
                     <div id="content" class="col-sm-10">
                         <h1 id="ngxphp">ngx_php</h1>
 <p><a href="https://travis-ci.org/rryqszq4/ngx_php"><img src="https://travis-ci.org/rryqszq4/ngx_php.svg?branch=master" alt="Build Status" /></a> 
-<a href="https://gitter.im/rryqszq4/ngx_php?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge"><img src="https://badges.gitter.im/rryqszq4/ngx_php.svg" alt="Gitter" /></a></p>
+<a href="https://gitter.im/rryqszq4/ngx_php?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge"><img src="https://badges.gitter.im/rryqszq4/ngx_php.svg" alt="Gitter" /></a>
+<a href="https://github.com/rryqszq4/ngx_php/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-BSD-blue.svg" alt="image" /></a></p>
 
-<p><a href="https://github.com/rryqszq4/ngx_php">ngx_php</a>—Embedded php scripting language for nginx-module.Another name is php-nginx-module. <br />
+<p><a href="https://github.com/rryqszq4/ngx_php">ngx_php</a>—Embedded php script language for nginx-module. Another name is php-nginx-module. <br />
 QQ group：558795330</p>
 
 <h2 id="features">Features</h2>
@@ -120,10 +121,28 @@ nginx-1.9.15</li>
 </ul>
 
 <h2 id="installation">Installation</h2>
+<ul>
+  <li>build php</li>
+</ul>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>wget http://php.net/distributions/php-5.3.29.tar.gz
+tar xf php-5.3.29.tar.gz
+<span class="nb">cd </span>php-5.3.29
+./configure --prefix<span class="o">=</span>/path/to/php <span class="se">\</span>
+            --enable-maintainer-zts <span class="se">\</span>
+            --enable-embed
+make <span class="o">&amp;&amp;</span> make install
+</code></pre>
+</div>
+
+<ul>
+  <li>build ngx_php</li>
+</ul>
+
 <div class="highlighter-rouge"><pre class="highlight"><code>git clone https://github.com/rryqszq4/ngx_php.git
 
 wget <span class="s1">'http://nginx.org/download/nginx-1.6.3.tar.gz'</span>
-tar -zxvf nginx-1.6.3.tar.gz
+tar xf nginx-1.6.3.tar.gz
 <span class="nb">cd </span>nginx-1.6.3
 
 <span class="nb">export </span><span class="nv">PHP_BIN</span><span class="o">=</span>/path/to/php/bin
@@ -135,6 +154,7 @@ tar -zxvf nginx-1.6.3.tar.gz
             --with-ld-opt<span class="o">=</span><span class="s2">"-Wl,-rpath,</span><span class="nv">$PHP_LIB</span><span class="s2">"</span> <span class="se">\</span>
             --add-module<span class="o">=</span>/path/to/ngx_php/dev/ngx_devel_kit <span class="se">\</span>
             --add-module<span class="o">=</span>/path/to/ngx_php
+make <span class="o">&amp;&amp;</span> make install
 </code></pre>
 </div>
 
@@ -189,30 +209,32 @@ tar -zxvf nginx-1.6.3.tar.gz
 <span class="p">}</span>
 </code></pre>
 </div>
-<p><strong>yaf &amp; yii :</strong>
-```nginx
-server {
-    listen 80;
-    server_name yaf-sample.com;
-    access_log  logs/yaf-sample.com.access.log;</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>root /home/www/yaf-sample;
-index index.php index.html;
+<p><strong>yaf &amp; yii :</strong></p>
 
-location /favicon.ico {
-    log_not_found off;
-}
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">server</span> <span class="p">{</span>
+    <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
+    <span class="kn">server_name</span> <span class="s">yaf-sample.com</span><span class="p">;</span>
+    <span class="kn">access_log</span>  <span class="nc">logs/yaf-sample</span><span class="s">.com.access.log</span><span class="p">;</span>
 
-location / {
-    try_files $uri $uri/ /index.php$is_args$args;
-}
+    <span class="kn">root</span> <span class="n">/home/www/yaf-sample</span><span class="p">;</span>
+    <span class="kn">index</span> <span class="s">index.php</span> <span class="s">index.html</span><span class="p">;</span>
+    
+    <span class="kn">location</span> <span class="n">/favicon.ico</span> <span class="p">{</span>
+        <span class="kn">log_not_found</span> <span class="no">off</span><span class="p">;</span>
+    <span class="p">}</span>
 
-location ~ \.php$ {
-    content_by_php '
-        header("Content-Type: text/html;charset=UTF-8");
-        require_once("/home/www/yaf-sample/index.php");
-    ';
-} }   ```
+    <span class="kn">location</span> <span class="n">/</span> <span class="p">{</span>
+        <span class="kn">try_files</span> <span class="nv">$uri</span> <span class="nv">$uri</span><span class="n">/</span> <span class="n">/index.php</span><span class="nv">$is_args$args</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kn">location</span> <span class="p">~</span> <span class="sr">\.php$</span> <span class="p">{</span>
+        <span class="kn">content_by_php</span> <span class="s">'</span>
+            <span class="s">header("Content-Type:</span> <span class="nc">text/html</span><span class="p">;</span><span class="kn">charset=UTF-8"</span><span class="s">)</span><span class="p">;</span>
+            <span class="kn">require_once</span><span class="s">("/home/www/yaf-sample/index.php")</span><span class="p">;</span>
+        <span class="kn">'</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>  
 </code></pre>
 </div>
 
@@ -248,62 +270,113 @@ Result: PASS
 <strong>context:</strong> <em>http</em><br />
 <strong>phase:</strong> <em>loading-config</em></p>
 
-<p>加载php配置文件
-<code class="highlighter-rouge">nginx
-php_ini_path /usr/local/php/etc/php.ini;
-</code></p>
+<ul>
+  <li>Loading php configuration file in nginx configuration initialization.</li>
+</ul>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">php_ini_path</span> <span class="n">/usr/local/php/etc/php.ini</span><span class="p">;</span>
+</code></pre>
+</div>
 
 <h4 id="initbyphp">init_by_php</h4>
 <p><strong>syntax:</strong> <em>init_by_php &lt;php script code&gt;</em><br />
 <strong>context:</strong> <em>http</em><br />
 <strong>phase:</strong> <em>loading-config</em></p>
 
+<ul>
+  <li>In nginx configuration initialization or boot time, run some php scripts.</li>
+</ul>
+
 <h4 id="initbyphpfile">init_by_php_file</h4>
 <p><strong>syntax:</strong> <em>init_by_php_file &lt;php script file&gt;</em><br />
 <strong>context:</strong> <em>http</em><br />
 <strong>phase:</strong> <em>loading-config</em></p>
+
+<ul>
+  <li>In nginx configuration initialization or boot time, run some php script file.</li>
+</ul>
 
 <h4 id="rewritebyphp">rewrite_by_php</h4>
 <p><strong>syntax:</strong> <em>rewrite_by_php &lt;php script code&gt;</em><br />
 <strong>context:</strong> <em>http, server, location, location if</em><br />
 <strong>phase:</strong> <em>rewrite</em></p>
 
+<ul>
+  <li>Use php script redirect in nginx rewrite stage of.</li>
+</ul>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">location</span> <span class="n">/rewrite_by_php</span> <span class="p">{</span>
+        <span class="kn">rewrite_by_php</span> <span class="s">"</span>
+            <span class="s">echo</span> <span class="s">"rewrite_by_php"</span><span class="p">;</span>
+            <span class="kn">header</span><span class="s">('Location:</span> <span class="s">http://www.baidu.com/')</span><span class="p">;</span>
+        <span class="kn">"</span><span class="p">;</span>
+    <span class="p">}</span>
+</code></pre>
+</div>
+
 <h4 id="rewritebyphpfile">rewrite_by_php_file</h4>
 <p><strong>syntax:</strong> <em>rewrite_by_php_file &lt;php script file&gt;</em><br />
 <strong>context:</strong> <em>http, server, location, location if</em><br />
 <strong>phase:</strong> <em>rewrite</em></p>
+
+<ul>
+  <li>Use php script file, redirect in nginx rewrite stage of.</li>
+</ul>
 
 <h4 id="accessbyphp">access_by_php</h4>
 <p><strong>syntax:</strong> <em>access_by_php &lt;php script code&gt;</em><br />
 <strong>context:</strong> <em>http, server, location, location if</em><br />
 <strong>phase:</strong> <em>access</em></p>
 
+<ul>
+  <li>Nginx in the access phase, the php script determine access.</li>
+</ul>
+
 <h4 id="accessbyphpfile">access_by_php_file</h4>
 <p><strong>syntax:</strong> <em>access_by_php_file &lt;php script file&gt;</em><br />
 <strong>context:</strong> <em>http, server, location, location if</em><br />
 <strong>phase:</strong> <em>access</em></p>
+
+<ul>
+  <li>Nginx in the access phase, the php script file Analyzing access。</li>
+</ul>
 
 <h4 id="contentbyphp">content_by_php</h4>
 <p><strong>syntax:</strong> <em>content_by_php &lt;php script code&gt;</em><br />
 <strong>context:</strong> <em>http, server, location, location if</em><br />
 <strong>phase:</strong> <em>content</em></p>
 
+<ul>
+  <li>Most central command, run php script nginx stage of content.</li>
+</ul>
+
 <h4 id="contentbyphpfile">content_by_php_file</h4>
 <p><strong>syntax:</strong> <em>content_by_php_file &lt;php script file&gt;</em><br />
 <strong>context:</strong> <em>http, server, location, location if</em><br />
 <strong>phase:</strong> <em>content</em></p>
+
+<ul>
+  <li>Most central command, run php script file nginx stage of content.</li>
+</ul>
 
 <h4 id="contentasyncbyphp">content_async_by_php</h4>
 <p><strong>syntax:</strong> <em>content_async_by_php &lt;php script code&gt;</em><br />
 <strong>context:</strong> <em>http, server, location, location if</em><br />
 <strong>phase:</strong> <em>content</em></p>
 
-<p>异步的代码方式去执行非阻塞的php代码调用</p>
+<ul>
+  <li>Asynchronous mode code to execute php code to call non-blocking.</li>
+</ul>
 
 <h4 id="contentsyncbyphp">content_sync_by_php</h4>
 <p><strong>syntax:</strong> <em>content_sync_by_php &lt;php script code&gt;</em><br />
 <strong>context:</strong> <em>http, server, location, location if</em><br />
 <strong>phase:</strong> <em>content</em></p>
+
+<ul>
+  <li>Very similar content by php, but way synchronization code to execute php code 
+to call non-blocking, the development is only a test of each instruction.</li>
+</ul>
 
 <h4 id="setbyphp">set_by_php</h4>
 <p><strong>syntax:</strong> <em>set_by_php &lt;php script code&gt;</em><br />
@@ -331,20 +404,27 @@ php_ini_path /usr/local/php/etc/php.ini;
 <p><strong>syntax:</strong> <em>ngx_location::capture_async(string $uri, mixed $closure)</em><br />
 <strong>context:</strong> <em>content_async_by_php</em></p>
 
-<p>借助nginx底层强大的subrequest，实现php完全非阻塞的异步代码调用
-<code class="highlighter-rouge">php
-ngx_location::capture_async('/foo', function($callback = 'callback'){
+<ul>
+  <li>With nginx underlying strong subrequest, fully non-blocking asynchronous realize 
+php code calls.</li>
+</ul>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>ngx_location::capture_async('/foo', function($callback = 'callback'){
     echo $callback;
 });
-</code></p>
+</code></pre>
+</div>
 
 <h4 id="ngxlocationcapturemultiasync">ngx_location::capture_multi_async</h4>
 <p><strong>syntax:</strong> <em>ngx_location::capture_multi_async(array $uri, mixed $closure)</em><br />
 <strong>context:</strong> <em>content_async_by_php</em></p>
 
-<p>和ngx_location::capture_async相似，但是可以支持完全非阻塞的并行异步代码调用
-<code class="highlighter-rouge">php
-$capture_multi = array(
+<ul>
+  <li>And ngx location :: capture async similar, but can support fully non-blocking asynchronous 
+parallel code calls.</li>
+</ul>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$capture_multi = array(
     '/foo',
     '/bar',
     '/baz'
@@ -352,32 +432,39 @@ $capture_multi = array(
 ngx_location::capture_multi_async($capture_multi, function($callback = 'callback'){
     var_dump($callback);
 });
-</code></p>
+</code></pre>
+</div>
 
 <h4 id="ngxlocationcapture">ngx_location::capture</h4>
 <p><strong>syntax:</strong> <em>ngx_location::capture(string $uri)</em><br />
 <strong>context:</strong> <em>content_sync_by_php</em></p>
 
-<p>借助nginx底层强大的subrequest，实现php完全非阻塞调用
-<code class="highlighter-rouge">php
-$result = ngx_location::capture('/foo');
+<ul>
+  <li>With nginx underlying strong subrequest, php achieve full non-blocking calls.</li>
+</ul>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$result = ngx_location::capture('/foo');
 echo $result;
-</code></p>
+</code></pre>
+</div>
 
 <h4 id="ngxlocationcapturemulti">ngx_location::capture_multi</h4>
 <p><strong>syntax:</strong> <em>ngx_location::capture_multi(array $uri)</em><br />
 <strong>context:</strong> <em>content_sync_by_php</em></p>
 
-<p>和ngx_location::capture相似，但是可以支持完全非阻塞的并行调用
-<code class="highlighter-rouge">php
-$capture_multi = array(
+<ul>
+  <li>And ngx location :: capture similar, but can support full non-blocking concurrent calls.</li>
+</ul>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$capture_multi = array(
     '/foo',
     '/bar',
     '/baz'
 );
 $result = ngx_location::capture_multi($capture_multi);
 var_dump($result);
-</code></p>
+</code></pre>
+</div>
 
 <h2 id="copyright-and-license">Copyright and License</h2>
 <p>Copyright (c) 2016, rryqszq4 <a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#110;&#103;&#120;&#112;&#104;&#112;&#064;&#103;&#109;&#097;&#105;&#108;&#046;&#099;&#111;&#109;">&#110;&#103;&#120;&#112;&#104;&#112;&#064;&#103;&#109;&#097;&#105;&#108;&#046;&#099;&#111;&#109;</a>
